@@ -36,10 +36,10 @@ public class GameImpl implements Game {
     @Override
     public void putChip(final Chip chip, final int column) {
         this.chip = chip;
-        vector2Reference.setVertical(column);
+        vector2Reference.setHorizontal(column);
         vector2Reference.setChip(chip);
-        vectors.stream().filter(vector2 -> vector2.getVertical() == vector2Reference.getVertical()).findFirst()
-            .ifPresent(vector21 -> vector2Reference.setHorizontal(vector2Reference.getHorizontal() + 1));
+        vectors.stream().filter(vector2 -> vector2.getHorizontal() == vector2Reference.getHorizontal()).findFirst()
+            .ifPresent(vector21 -> vector2Reference.setVertical(vector2Reference.getVertical() + 1));
 
         vectors.add(cloneVector(vector2Reference));
     }
@@ -69,8 +69,8 @@ public class GameImpl implements Game {
 //                calculateConcurrence();
 //            }
 //        }
-
-        return vectors.stream().filter(this::calculatePlayerWin).collect(Collectors.toList());
+        final List<Vector2> collect = vectors.stream().filter(this::calculatePlayerWin).collect(Collectors.toList());
+        return collect;
 
     }
 
@@ -82,10 +82,10 @@ public class GameImpl implements Game {
         ).findFirst().orElse(null);
 
         if (vectorPosibleFileteredAndMatched != null) {
-            final boolean win = findWin(vectorRoot, vectorPosibleFileteredAndMatched);
+            return findWin(vectorRoot, vectorPosibleFileteredAndMatched);
+        } else {
+            return false;
         }
-
-        return false;
 
 //        final Vector2 vector2PosibleMatchedInListVector = vectors.stream().map(
 //            vector2 -> vectorsPossibleList.stream().map(

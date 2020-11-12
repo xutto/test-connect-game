@@ -80,7 +80,7 @@ public enum LineType {
                 return vectorsWin.size() == timesToWin;
             case VERTICAL_U:
                 gameVectorList.stream()
-                    .filter(vector2 -> vector2.getChip() == chip)
+                    .filter(vector2 -> vector2.getChip() == chip) //todo arreglar el algoritm de comprobacion de trazada y agregar solo las fichas que lo componen
                     .forEach(vector2 -> {
                         vectorsWin.add(vector2);
                         for (int i = 0; i < timesToWin; i++) {
