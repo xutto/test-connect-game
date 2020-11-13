@@ -118,4 +118,16 @@ public class GameTest {
 		assertThat(gameResult.getPositions(), arrayContainingInAnyOrder(buildStreak(new ChipPosition(1, 2), new ChipPosition(4, 5))));
 	}
 
+	@Test
+	public void putChipTest() {
+		Game game = new GameImpl(6,7, 3);
+		game.putChip(Chip.RED, 0);
+		game.putChip(Chip.YELLOW, 0);
+		game.putChip(Chip.RED, 0);
+		game.putChip(Chip.RED, 1);
+		game.putChip(Chip.YELLOW, 1);
+		game.putChip(Chip.RED, 1);
+		game.putChip(Chip.YELLOW, 1);
+		game.putChip(Chip.RED, 1);
+	}
 }

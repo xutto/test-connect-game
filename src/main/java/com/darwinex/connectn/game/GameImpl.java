@@ -5,8 +5,10 @@ import com.darwinex.connectn.GameResult;
 import com.darwinex.connectn.Chip;
 import com.darwinex.connectn.LineType;
 import com.darwinex.connectn.Vector2;
+import com.darwinex.connectn.Vector2Game;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 public class GameImpl implements Game {
@@ -37,10 +39,13 @@ public class GameImpl implements Game {
     public void putChip(final Chip chip, final int column) {
         this.chip = chip;
         vector2Reference.setHorizontal(column);
+        vector2Reference.setVertical(0);
         vector2Reference.setChip(chip);
-        vectors.stream().filter(vector2 -> vector2.getHorizontal() == vector2Reference.getHorizontal()).findFirst()
-            .ifPresent(vector21 -> vector2Reference.setVertical(vector2Reference.getVertical() + 1));
-
+        vectors.forEach(vector2 -> {
+            if (vector2.getHorizontal() == vector2Reference.getHorizontal()) {
+                vector2Reference.setVertical(vector2.getVertical() + 1);
+            }
+        });
         vectors.add(cloneVector(vector2Reference));
     }
 
@@ -50,7 +55,7 @@ public class GameImpl implements Game {
 //        ArrayList<ChipPosition> chipPositions = new ArrayList<>();
         ChipPosition[] chipPositionsArray = calculateConcurrence()
             .stream()
-            .map(vector2 -> new ChipPosition(vector2.getHorizontal(), vector2.getHorizontal())).toArray(ChipPosition[]::new);
+            .map(vector2 -> new ChipPosition(vector2.getVertical(), vector2.getHorizontal())).toArray(ChipPosition[]::new);
         if (chipPositionsArray.length > 0) {
             return new GameResult(chip, chipPositionsArray);
         } else {
@@ -69,12 +74,22 @@ public class GameImpl implements Game {
 //                calculateConcurrence();
 //            }
 //        }
-        final List<Vector2> collect = vectors.stream().filter(this::calculatePlayerWin).collect(Collectors.toList());
-        return collect;
+        ArrayList<Vector2> vector2Winners = new ArrayList<>();
+        vectors.forEach(vector2 -> {
+            final Vector2Game resultGame = calculatePlayerWin(vector2);
+            if (resultGame.isResultGame()) {
+                vector2Winners.addAll(resultGame.getVector2WinList());
+            }
+        });
+//        final List<Vector2> collect = vectors.stream().filter(this::calculatePlayerWin).collect(Collectors.toList());
+        return vector2Winners.stream().distinct()
+            .sorted((o1, o2) -> o1.getHorizontal())
+            .sorted((o1, o2) -> o1.getVertical())
+            .collect(Collectors.toList());
 
     }
 
-    private boolean calculatePlayerWin(final Vector2 vectorRoot) {
+    private Vector2Game calculatePlayerWin(final Vector2 vectorRoot) {
         final ArrayList<Vector2> vectorsPossibleList = concurrenceList(vectorRoot);
 
         final Vector2 vectorPosibleFileteredAndMatched = vectorsPossibleList.stream().filter(
@@ -84,7 +99,7 @@ public class GameImpl implements Game {
         if (vectorPosibleFileteredAndMatched != null) {
             return findWin(vectorRoot, vectorPosibleFileteredAndMatched);
         } else {
-            return false;
+            return new Vector2Game();
         }
 
 //        final Vector2 vector2PosibleMatchedInListVector = vectors.stream().map(
@@ -116,9 +131,9 @@ public class GameImpl implements Game {
             vector2Posible.getChip() == vector2.getChip();
     }
 
-    private boolean findWin(final Vector2 vectorRoot, final Vector2 vector2PosibleMatched) {
+    private Vector2Game findWin(final Vector2 vectorRoot, final Vector2 vector2PosibleMatched) {
         final LineType lineType = checkLineType(vectorRoot, vector2PosibleMatched);
-        return lineType.checkWinInlineByType(numberOfConnectedByWin, vectors, vectorRoot.getChip());
+        return lineType.checkWinInlineByType(numberOfConnectedByWin, vectors, vectorRoot);
     }
 
     private LineType checkLineType(final Vector2 prePosition, final Vector2 postPosition) {
