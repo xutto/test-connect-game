@@ -32,17 +32,6 @@ public enum LineType {
 
         });
 
-//        gameVectorList.stream()
-//            .filter(vector2 -> vector2.getChip() == vector2Root.getChip())
-//            .forEach(vector2 -> {
-//                for (int i = 1; i < timesToWin; i++) {
-//                    final Vector2 vectorNext = getVector2Next(vector2, i);
-//                    if (gameVectorList.contains(vectorNext)) {
-//                        vectorsWin.add(vectorNext);
-//                    }
-//                }
-//            });
-
         Vector2Game vector2Game = new Vector2Game();
         if (vectorsWin.size() == timesToWin) {
             vector2Game.setResultGame(true);
