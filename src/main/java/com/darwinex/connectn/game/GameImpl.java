@@ -17,9 +17,9 @@ public class GameImpl implements Game {
     private final int rows;
     private final int columns;
     private final int numberOfConnectedByWin;
-    private Vector2 vector2Reference;
+    private final Vector2 vector2Reference;
     private Chip chip;
-    private ArrayList<Vector2> vectors;
+    private final ArrayList<Vector2> vectors;
 
 
     /**
@@ -52,7 +52,6 @@ public class GameImpl implements Game {
 
     @Override
     public GameResult getGameResult() {
-//        ArrayList<ChipPosition> chipPositions = new ArrayList<>();
         ChipPosition[] chipPositionsArray = calculateConcurrence()
             .stream()
             .map(vector2 -> new ChipPosition(vector2.getVertical(), vector2.getHorizontal())).toArray(ChipPosition[]::new);
@@ -64,16 +63,6 @@ public class GameImpl implements Game {
     }
 
     private List<Vector2> calculateConcurrence() {
-//
-//        int i = 1;
-//        for (Vector2 vector2 : vectors) {
-//            final Vector2 concurrenceVector = new Vector2(vector2.getHorizontal() + i, vector2.getVertical(), vector2.getChip());
-//            if (vectors.contains(concurrenceVector)) {
-//                calculatePlayerWin(concurrenceVector);
-//            } else {
-//                calculateConcurrence();
-//            }
-//        }
         ArrayList<Vector2> vector2Winners = new ArrayList<>();
         vectors.forEach(vector2 -> {
             final Vector2Game resultGame = calculatePlayerWin(vector2);
@@ -81,9 +70,7 @@ public class GameImpl implements Game {
                 vector2Winners.addAll(resultGame.getVector2WinList());
             }
         });
-//        final List<Vector2> collect = vectors.stream().filter(this::calculatePlayerWin).collect(Collectors.toList());
         return vector2Winners.stream().distinct()
-            .sorted((o1, o2) -> o1.getHorizontal())
             .sorted((o1, o2) -> o1.getVertical())
             .collect(Collectors.toList());
 
@@ -101,29 +88,7 @@ public class GameImpl implements Game {
         } else {
             return new Vector2Game();
         }
-
-//        final Vector2 vector2PosibleMatchedInListVector = vectors.stream().map(
-//            vector2 -> vectorsPossibleList.stream().map(
-//                vector2Posible -> matchVectors(vector2Posible, vector2)
-//            ).findFirst().get()
-//        ).findFirst().get();
-
-//        return vectors.stream()
-//            //dice de las posiciones de las fichas hay coincidencia con las posibles posiciones para iniciar la comprobacion de si son en linea
-//            .map(vector2 -> getMatchVector2PosibleToActual(vectorRoot))
-//            .anyMatch(vector2Posible -> findWin(vector2Posible, vectorRoot));
     }
-
-//    private Vector2 getMatchVector2PosibleToActual(final Vector2 vectorRoot) {
-//
-//        final Vector2 vectorMatched = vectors.stream()
-//            .findFirst(
-//                vector2 -> vectorsPossible.stream().map(vector2Posible -> {
-//                    return matchVectors(vector2Posible, vector2);
-//                })
-//            ).get();
-//        return null;
-//    }
 
     private boolean matchVectors(final Vector2 vector2Posible, final Vector2 vector2) {
         return vector2Posible.getHorizontal() == vector2.getHorizontal() &&
